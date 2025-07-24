@@ -185,20 +185,41 @@ app.post('/editProduct/:id', checkAuthenticated, checkAdmin, upload.single('imag
     res.redirect('/admin-dashboard');
   });
 }); 
-// edit cart for User 
-app.post('/cartedit/:id', (req, res) => {
-  const productId = req.params.id;
-  const newQty = parseInt(req.body.quantity);
-  if (!req.session.cart) req.session.cart = [];
 
-  req.session.cart = req.session.cart.map(item => {
-    if (item.productId == productId) {
-      item.quantity = newQty;
+app.get('/cart', checkAuthenticated, (req, res) => {
+  res.render('cart', { cart: req.session.cart || [], user: req.session.user });
+});
+
+app.post('/cart/add/:id', checkAuthenticated, (req, res) => {
+  const productId = parseInt(req.params.id);
+
+  const sql = 'SELECT * FROM products WHERE productId = ?';
+  db.query(sql, [productId], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(500).send('Product not found.');
     }
-    return item;
-  });
 
-  res.redirect('/cart');
+    const product = results[0];
+    const cartItem = {
+      productId: product.productId,
+      productName: product.productName,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    };
+
+    if (!req.session.cart) req.session.cart = [];
+
+    // Check if item already in cart
+    const existing = req.session.cart.find(item => item.productId == productId);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      req.session.cart.push(cartItem);
+    }
+
+    res.redirect('/cart');
+  });
 });
 
 // delete cart for User
