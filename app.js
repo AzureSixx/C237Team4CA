@@ -222,6 +222,31 @@ app.post('/cart/add/:id', checkAuthenticated, (req, res) => {
   });
 });
 
+// Edit quantity in cart
+app.post('/cart/edit', checkAuthenticated, (req, res) => {
+  const { productIds, quantities } = req.body;
+
+  if (!req.session.cart || !productIds || !quantities) {
+    return res.redirect('/cart');
+  }
+
+  const ids = Array.isArray(productIds) ? productIds : [productIds];
+  const qtys = Array.isArray(quantities) ? quantities : [quantities];
+
+  for (let i = 0; i < ids.length; i++) {
+    const id = parseInt(ids[i]);
+    const qty = parseInt(qtys[i]);
+    const item = req.session.cart.find(p => p.productId === id);
+    if (item && qty > 0) {
+      item.quantity = qty;
+      item.total = item.price * qty;  // ✅ optional, in case you want to store per-item total
+    }
+  }
+
+  res.redirect('/cart');
+});
+
+
 // delete cart for User
 app.post('/cartdelete/:id', (req, res) => {
   const productId = req.params.id;
@@ -231,7 +256,6 @@ app.post('/cartdelete/:id', (req, res) => {
 
   res.redirect('/cart');
 });
-
 
 
 // Delete Product
