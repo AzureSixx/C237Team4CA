@@ -223,6 +223,16 @@ app.get('/api/search', (req, res) => {
   });
 });
 
+// Product Details
+app.get('/product/:id', checkAuthenticated, (req, res) => {
+  const sql = 'SELECT * FROM products WHERE productId = ?';
+  db.query(sql, [req.params.id], (err, results) => {
+    if (err || results.length === 0) return res.status(404).send('Product not found.');
+    res.render('productDetails', { product: results[0], user: req.session.user });
+  });
+});
+
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Gangnam Spice running at http://localhost:${PORT}`);
