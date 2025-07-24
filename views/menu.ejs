@@ -119,8 +119,8 @@
                 <h5 class="card-title"><%= product.productName %></h5>
                 <p class="card-text text-truncate"><%= product.description %></p>
                 <div class="mt-auto d-flex justify-content-between">
-                  <a href="/product/<%= product.productid %>" class="btn btn-sm btn-outline-primary">More Details</a>
-                  <form action="/cart/add/<%= product.productid %>" method="POST" class="m-0">
+                  <a href="/product/<%= product.productId %>" class="btn btn-sm btn-outline-primary">More Details</a>
+                  <form action="/cart/add/<%= product.productId %>" method="POST" class="m-0">
                     <button type="submit" class="btn btn-sm btn-outline-success">Add to Cart</button>
                   </form>
                 </div>

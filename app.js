@@ -224,15 +224,22 @@ app.get('/api/search', (req, res) => {
 });
 
 // Product Details
-app.get('/product/:id', async (req, res) => {
+app.get('/product/:id', (req, res) => {
   const productId = req.params.id;
-  const [results] = await connection.query('SELECT * FROM products WHERE productid = ?', [productId]);
-  if (results.length > 0) {
+  const query = 'SELECT * FROM products WHERE productid = ?';
+  
+  db.query(query, [productId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Database error.');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Product not found.');
+    }
     res.render('product', { product: results[0], user: req.session.user });
-  } else {
-    res.status(404).send('Product not found');
-  }
+  });
 });
+
 
 
 
