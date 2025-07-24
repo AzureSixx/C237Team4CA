@@ -224,13 +224,16 @@ app.get('/api/search', (req, res) => {
 });
 
 // Product Details
-app.get('/product/:id', checkAuthenticated, (req, res) => {
-  const sql = 'SELECT * FROM products WHERE productId = ?';
-  db.query(sql, [req.params.id], (err, results) => {
-    if (err || results.length === 0) return res.status(404).send('Product not found.');
-    res.render('productDetails', { product: results[0], user: req.session.user });
-  });
+app.get('/product/:id', async (req, res) => {
+  const productId = req.params.id;
+  const [results] = await connection.query('SELECT * FROM products WHERE productid = ?', [productId]);
+  if (results.length > 0) {
+    res.render('product', { product: results[0], user: req.session.user });
+  } else {
+    res.status(404).send('Product not found');
+  }
 });
+
 
 
 // Start Server
