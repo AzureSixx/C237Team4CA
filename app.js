@@ -184,7 +184,34 @@ app.post('/editProduct/:id', checkAuthenticated, checkAdmin, upload.single('imag
     if (err) return res.status(500).send('Failed to update product.');
     res.redirect('/admin-dashboard');
   });
+}); 
+// edit cart for User 
+app.post('/cartedit/:id', (req, res) => {
+  const productId = req.params.id;
+  const newQty = parseInt(req.body.quantity);
+  if (!req.session.cart) req.session.cart = [];
+
+  req.session.cart = req.session.cart.map(item => {
+    if (item.productId == productId) {
+      item.quantity = newQty;
+    }
+    return item;
+  });
+
+  res.redirect('/cart');
 });
+
+// delete cart for User
+app.post('/cartdelete/:id', (req, res) => {
+  const productId = req.params.id;
+  if (!req.session.cart) req.session.cart = [];
+
+  req.session.cart = req.session.cart.filter(item => item.productId != productId);
+
+  res.redirect('/cart');
+});
+
+
 
 // Delete Product
 app.get('/deleteProduct/:id', checkAuthenticated, checkAdmin, (req, res) => {

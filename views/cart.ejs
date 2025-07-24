@@ -18,7 +18,7 @@
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/shopping">Shop</a>
+            <a class="nav-link" href="/menu">Menu</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/cart">View Cart</a>
@@ -30,51 +30,57 @@
       </div>
     </div>
   </nav>
+
   <!-- Cart Content -->
   <div class="container">
     <h2 class="mt-4">Shopping Cart</h2>
-    <% if (cart.length===0) { %>
+    <% if (cart.length === 0) { %>
       <p>Your cart is empty.</p>
-      <% } else { %>
-        <table class="table table-bordered">
-          <thead>
+    <% } else { %>
+      <table class="table table-bordered align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Product</th>
+            <th>Image</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let total = 0; %>
+          <% for (let i = 0; i < cart.length; i++) { %>
             <tr>
-              <th>Product</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Total</th>
+              <td><%= cart[i].productName %></td>
+              <td><img src="/images/<%= cart[i].image %>" width="80" class="img-thumbnail" /></td>
+              <td>$<%= cart[i].price.toFixed(2) %></td>
+              <td>
+                <!-- Edit Quantity Form -->
+                <form action="/cartedit/<%= cart[i].productId %>" method="POST" class="d-flex align-items-center">
+                  <input type="number" name="quantity" value="<%= cart[i].quantity %>" min="1" class="form-control w-50 me-2" required />
+                  <button type="submit" class="btn btn-warning btn-sm">Update</button>
+                </form>
+              </td>
+              <td>$<%= (cart[i].price * cart[i].quantity).toFixed(2) %></td>
+              <td>
+                <!-- Delete Item Form -->
+                <form action="/cartdelete/<%= cart[i].productId %>" method="POST" onsubmit="return confirm('Remove this item?')">
+                  <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            <% let total=0; %>
-              <% for (let i=0; i < cart.length; i++) { %>
-                <tr>
-                  <td>
-                    <%= cart[i].productName %>
-                  </td>
-                  <td><img src="/images/<%= cart[i].image %>" width="80" class="img-thumbnail"></td>
-                  <td>
-                    <%= cart[i].quantity %>
-                  </td>
-                  <td>$<%= (cart[i].price * cart[i].quantity).toFixed(2) %>
-                  </td>
-                </tr>
-                <% total +=cart[i].price * cart[i].quantity; %>
-                  <% }; %>
-          </tbody>
-        </table>
-        <h4>Total: $<%= total.toFixed(2) %>
-        </h4>
-        <!-- Edit Link-->
-        <td><a href="/editProduct/<%=products[i].productId%>">Edit</a></td>
-        <!-- Delete Link-->
-        <td><a href="/deleteProduct/<%=products[i].productId%>"
-            onclick="return confirm('Are you sure you want to delete this product?')">Delete</a></td>
+            <% total += cart[i].price * cart[i].quantity; %>
+          <% } %>
+        </tbody>
+      </table>
 
-        <div class="mt-4">
-          <a href="/shopping" class="btn btn-secondary">Back to Shopping</a>
-        </div>
-        <% } %>
+      <h4>Total: $<%= total.toFixed(2) %></h4>
+
+      <div class="mt-4">
+        <a href="/menu" class="btn btn-secondary">Back to Menu</a>
+      </div>
+    <% } %>
   </div>
 </body>
 
